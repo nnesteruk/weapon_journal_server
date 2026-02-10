@@ -16,17 +16,17 @@ RUN npx prisma generate
 
 RUN npm run build
 
-FROM base AS production
+# FROM base AS production
 
-ENV NODE_ENV=production
+# ENV NODE_ENV=production
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY --from=build /app/package.json ./ 
+# COPY --from=build /app/package.json ./ 
 
-RUN npm install --omit=dev
+# RUN npm install --omit=dev
 
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma/migrations ./prisma/migrations
+# COPY --from=build /app/dist ./dist
+# COPY --from=build /app/prisma/migrations ./prisma/migrations
 
 CMD ["node", "dist/main"]
