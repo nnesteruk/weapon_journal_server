@@ -24,7 +24,7 @@ WORKDIR /app
 
 COPY --from=build /app/package.json /app/package-lock.json 
 
-RUN npm install --production
+RUN npm install --omit=dev
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma/migrations ./prisma/migrations
