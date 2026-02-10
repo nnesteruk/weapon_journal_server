@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Applicant {
+  id        String   @id @default(uuid())
+  fullName  String   @unique @map("full_name") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  case      Case[]
+
+  @@map("applicants")
+}
+
+model Caliber {
+  id            String      @id @default(uuid())
+  productTypeId String      @map("product_type_id")
+  name          String      @db.VarChar(50)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  productType   ProductType @relation(fields: [productTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  products      Product[]
+
+  @@unique([productTypeId, name], map: "caliber_unique")
+  @@map("calibers")
+}
+
+model Manufacturer {
+  id        String    @id @default(uuid())
+  name      String    @db.VarChar(255)
+  country   String    @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  product   Product[]
+
+  @@unique([name, country], map: "manufacturer_unique")
+  @@map("manufacturers")
+}
+
+model Model {
+  id                String          @id @default(uuid())
+  modelName         String          @map("model_name") @db.VarChar(255)
+  productTypeId     String          @map("product_type_id")
+  productCategoryId String          @map("product_category_id")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  productType       ProductType     @relation(fields: [productTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_type")
+  productCategory   ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_category")
+  product           Product[]
+
+  @@unique([modelName, productCategoryId, productTypeId], map: "model_unique")
+  @@map("models")
+}
+
+model Product {
+  id                String   @id @default(uuid())
+  caseId            String?  @map("case_id")
+  productTypeId     String   @map("product_type_id")
+  productCategoryId String   @map("product_category_id")
+  modelId           String?  @map("model_id")
+  caliberId         String?  @map("caliber_id")
+  manufacturerId    String?  @map("manufacturer_id")
+  serialNumber      String?  @map("serial_number")
+  count             Int      @default(1) @map("count")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  case            Case?           @relation(fields: [caseId], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "fk_case")
+  productCategory ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_category")
+  manufacturer    Manufacturer?   @relation(fields: [manufacturerId], references: [id], onDelete: Restrict, onUpdate: NoAction, map: "fk_product_manufacturer")
+  model           Model?          @relation(fields: [modelId], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "fk_product_model")
+  productType     ProductType     @relation(fields: [productTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_type")
+  caliber         Caliber?        @relation(fields: [caliberId], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "fk_caliber")
+
+  @@unique([manufacturerId, productCategoryId, serialNumber, productTypeId, caseId], map: "product_unique")
+  @@map("products")
+}
+
+model ProductCategory {
+  id            String      @id @default(uuid())
+  productTypeId String      @map("product_type_id")
+  categoryName  String      @map("category_name") @db.VarChar(100)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  product       Product[]
+  productType   ProductType @relation(fields: [productTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_category_type")
+  models        Model[]
+
+  @@unique([productTypeId, categoryName], map: "category_unique")
+  @@map("product_categories")
+}
+
+model ProductType {
+  id              String            @id(map: "weapon_type_pkey") @default(uuid())
+  productType     String            @unique @map("products_type")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  product         Product[]
+  productCategory ProductCategory[]
+  models          Model[]
+  calibers        Caliber[]
+
+  @@map("product_types")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  login     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name      String
+  cases     Case[]
+
+  @@map("users")
+}
+
+model Case {
+  id                  String           @id @default(uuid())
+  caseNum             Int              @map("case_num")
+  registerDate        DateTime         @map("register_date") @db.Date
+  applicantId         String           @map("applicant_id")
+  legalForm           LegalForm        @default(INDIVIDUAL) @map("legal_form")
+  contractNum         String           @map("contract_num") @db.VarChar(50)
+  contractDate        DateTime?        @map("contract_date") @db.Date
+  contractSum         Float?           @map("contract_sum")
+  paymentNum          String?          @map("payment_num") @db.VarChar(50)
+  contractPaymentDate DateTime?        @map("contract_payment_date") @db.Date
+  products            Product[]
+  documents           Documents[]
+  documentsCount      DocumentsCount[]
+  refusalComment      String?          @map("refusal_comment") @db.VarChar(255)
+  sertifNum           String?          @map("sertif_num") @db.VarChar(50)
+  stateApplication    CaseState        @default(ACTIVE) @map("state_application")
+  userId              String?          @map("user_id")
+  paymentDeadline     DateTime?        @map("payment_deadline")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+
+  applicant Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("cases")
+}
+
+model Documents {
+  id        String   @id @default(uuid())
+  caseId    String   @map("case_id")
+  category  String
+  fileName  String   @map("file_name")
+  filePath  String   @map("file_path")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+model DocumentsCount {
+  id        String   @id @default(uuid())
+  caseId    String   @map("case_id")
+  category  String
+  count     Int      @default(0)
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([caseId, category], map: "documents_count_unique")
+  @@map("documents_count")
+}
+
+enum Role {
+  ADMIN
+  USER
+
+  @@map("enum_roles")
+}
+
+enum CaseState {
+  ACTIVE
+  COMPLETED
+  REFUSED
+
+  @@map("enum_case-states")
+}
+
+enum LegalForm {
+  LEGAL
+  INDIVIDUAL
+  SELF_EMPLOYED
+
+  @@map("enum_legal-forms")
+}
