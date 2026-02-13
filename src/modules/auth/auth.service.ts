@@ -140,15 +140,10 @@ export class AuthService {
 
   private setCookie(res: Response, value: string, expires: Date) {
     const isDevelopment = isDev(this.configService);
-    console.log(isDevelopment);
 
     res.cookie("refreshToken", value, {
       expires,
       httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // domain: ".traefik.me",
-      // path: "/",
       domain: this.configService.getOrThrow(this.COOKIE_DOMAIN),
       secure: !isDevelopment,
       sameSite: isDevelopment ? "lax" : "none",

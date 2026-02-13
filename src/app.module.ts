@@ -16,6 +16,7 @@ import { ConfigModule } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from "path";
 import { FileModule } from "./modules/file";
+import { StatsModule } from "./stats/stats.module";
 
 @Module({
   controllers: [],
@@ -41,6 +42,7 @@ import { FileModule } from "./modules/file";
     ProductModule,
     CaseModule,
     FileModule,
+    StatsModule,
   ],
 })
 export class AppModule {}

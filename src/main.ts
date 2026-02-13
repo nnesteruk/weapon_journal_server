@@ -19,10 +19,7 @@ async function start() {
 
   app.use(cookieParser());
 
-  app.useGlobalPipes(
-    // new CustomValidationPipe(),
-    new ValidationPipe({ transform: true }),
-  );
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   setupSwagger(app);
 

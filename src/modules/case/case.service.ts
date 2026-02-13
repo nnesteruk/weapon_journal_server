@@ -17,6 +17,7 @@ export class CaseService {
   ) {}
 
   async getAllCases(query: GetCaseQueryListDto) {
+    console.log(query);
     return await this.prismaService.case.findMany({
       where: {
         ...(query.state && { stateApplication: query.state }),
@@ -264,7 +265,6 @@ export class CaseService {
 
       if (products?.length) {
         const existingIds = products.map((product) => product.id);
-        console.log(existingIds);
 
         await prisma.product.deleteMany({
           where: {
