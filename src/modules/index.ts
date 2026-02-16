@@ -8,4 +8,5 @@ export { PrismaModule } from "./prisma";
 export { ProductModule } from "./product";
 export { ProductCategoryModule } from "./product-category";
 export { ProductTypeModule } from "./product-type";
+export { StatsModule } from "./stats/stats.module";
 export { UserModule } from "./user";

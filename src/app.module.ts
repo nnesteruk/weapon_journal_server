@@ -9,6 +9,7 @@ import {
   ProductCategoryModule,
   ProductModule,
   ProductTypeModule,
+  StatsModule,
   UserModule,
 } from "@modules";
 import { Module } from "@nestjs/common";
@@ -16,7 +17,6 @@ import { ConfigModule } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from "path";
 import { FileModule } from "./modules/file";
-import { StatsModule } from "./stats/stats.module";
 
 @Module({
   controllers: [],

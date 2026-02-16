@@ -15,6 +15,6 @@ export class StatsController {
 
   @Get()
   async getStats(@Query() query: GetStatsQueryListDto) {
-    return await this.statsService.getStats(query); //this;
+    return await this.statsService.getStats(query);
   }
 }
