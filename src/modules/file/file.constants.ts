@@ -1,7 +1,8 @@
 export const DOCUMENTS_CATEGORIES = [
+  { key: "contract", label: "Договор" },
   { key: "answer", label: "Ответ" },
-  { key: "indentif", label: "Идентификация" },
-  { key: "act_identif", label: "Акт идентификации" },
+  { key: "identification", label: "Идентификация" },
+  { key: "act_identification", label: "Акт идентификации" },
   { key: "act_selections", label: "Акт выбора" },
   { key: "ref_for_test", label: "Передача на тест" },
   { key: "decision", label: "Решение" },
@@ -10,3 +11,5 @@ export const DOCUMENTS_CATEGORIES = [
   { key: "notification", label: "Уведомление" },
   { key: "refusal", label: "Отказ" },
 ] as const;
+
+export type DocumentCategory = (typeof DOCUMENTS_CATEGORIES)[number]["key"];

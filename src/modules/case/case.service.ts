@@ -56,7 +56,7 @@ export class CaseService {
         documents: { omit: { createdAt: true, updatedAt: true } },
         documentsCount: { omit: { createdAt: true, updatedAt: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { registerDate: "desc" },
     });
   }
 

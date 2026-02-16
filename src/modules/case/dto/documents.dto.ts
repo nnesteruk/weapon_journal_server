@@ -1,3 +1,4 @@
+import { type DocumentCategory } from "@modules/file/file.constants";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class DocumentsDto {
@@ -20,7 +21,7 @@ export class DocumentsDto {
     description: "Категория документа",
     type: String,
   })
-  category: string;
+  category: DocumentCategory;
 
   @ApiProperty({
     example: "1764686120417-1.docx",
