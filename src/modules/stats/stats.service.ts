@@ -1,101 +1,102 @@
 import { PrismaService } from "@modules/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { GetStatsQueryListDto } from "./dto/get-stats-query-list.dto";
+import { ProductByType } from "./interfaces/types";
 
 @Injectable()
 export class StatsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getStats(query: GetStatsQueryListDto) {
-    const cases = await this.prismaService.case.findMany({
+    const totalCases = await this.prismaService.case.count({
       where: {
         registerDate: {
           gte: query.startDate,
           lte: query.endDate,
         },
       },
-      include: {
-        documentsCount: true,
-        products: {
-          include: { productType: true },
-        },
-        // _count: {
-        //   select: {
-        //     products: {},
-        //   },
-        // },
-        _count: {
-          select: {
-            products: {
-              where: {},
+    });
+
+    const productsByType = await this.prismaService.$queryRaw<ProductByType[]>`
+    SELECT pt.products_type as "productsType", sum(p.count)::int as total from  products p
+    join product_types pt ON  pt.id = p.product_type_id
+    join  cases c on c.id = p.case_id 
+    where c.register_date between ${query.startDate} and ${query.endDate}
+    GROUP BY pt.products_type
+    ORDER BY total DESC
+    `;
+
+    const totalProductsByType = productsByType.reduce((acc, item) => {
+      return acc + item.total;
+    }, 0);
+    console.log(totalProductsByType);
+
+    const documents = await this.prismaService.documentsCount
+      .groupBy({
+        by: ["category"],
+        where: {
+          case: {
+            registerDate: {
+              gte: query.startDate,
+              lte: query.endDate,
             },
           },
         },
-      },
-    });
-    console.log("cases", cases);
+        _sum: { count: true },
+      })
+      .then((result) => {
+        return result.map((item) => {
+          return {
+            category: item.category,
+            count: item._sum.count,
+          };
+        });
+      });
 
-    // const product = await this.prismaService.product.groupBy({
-    //   by: ["productTypeId"],
-    //   _sum: { count: true },
-    // });
+    const totalIdentifications =
+      documents.find((item) => {
+        return item.category === "identification";
+      })?.count ?? 0;
 
-    const documents = await this.prismaService.documentsCount.groupBy({
-      by: ["category"],
-      _sum: { count: true },
-    });
+    const totalDocuments = documents.reduce((acc, item) => {
+      return acc + (item.count ?? 0);
+    }, 0);
 
-    const totalIdentification =
-      documents.find((item) => item.category === "identification")?._sum
-        .count || 0;
-
-    const products = cases
-      .map((caseItem) => caseItem.products)
-      .flat()
-      .reduce(
-        (obj, product) => {
-          obj[product.productType.productType] =
-            (obj[product.productType.productType] || 0) + 1;
-          return obj;
+    const totalContractSum = await this.prismaService.case
+      .aggregate({
+        _sum: {
+          contractSum: true,
         },
-        {} as Record<string, number>,
-      );
+        where: {
+          registerDate: {
+            gte: query.startDate,
+            lte: query.endDate,
+          },
+        },
+      })
+      .then((result) => {
+        return result._sum.contractSum;
+      });
 
-    // const documents = cases
-    //   .map((caseItem) => caseItem.documentsCount)
-    //   .flat()
-    //   .reduce(
-    //     (obj, item) => {
-    //       obj[item.category] = (obj[item.category] || 0) + item.count;
-    //       return obj;
-    //     },
-    //     {} as Record<DocumentsCategoryKey, number | undefined>,
-    //   );
-
-    const refusesCase = cases.filter(
-      (item) => item.stateApplication === "REFUSED",
-    );
-
-    const kpi = cases.reduce(
-      (obj, caseItem) => {
-        // obj.totalProducts += caseItem._count.products;
-        obj.totalSum = obj.totalSum + (caseItem.contractSum || 0);
-        return obj;
+    const refusesCase = await this.prismaService.case.findMany({
+      where: {
+        stateApplication: "REFUSED",
+        registerDate: {
+          gte: query.startDate,
+          lte: query.endDate,
+        },
       },
-      {
-        totalSum: 0,
-        totalProducts: 0,
-        refusal: 0,
-      },
-    );
+    });
 
     return {
-      ...kpi,
-      totalCases: cases.length,
-      totalIdentification,
+      totalCases,
+      productsByType,
+      totalProductsByType,
+      totalIdentifications,
       documents,
-      products,
+      totalDocuments,
       refusesCase,
+      totalContractSum,
     };
   }
 }
