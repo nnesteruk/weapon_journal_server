@@ -19,9 +19,9 @@ export class StatsService {
 
     const productsByType = await this.prismaService.$queryRaw<ProductByType[]>`
     SELECT pt.products_type as "productsType", sum(p.count)::int as total from  products p
-    join product_types pt ON  pt.id = p.product_type_id
-    join  cases c on c.id = p.case_id 
-    where c.register_date between ${query.startDate} and ${query.endDate}
+    inner join product_types pt ON  pt.id = p.product_type_id
+    inner join  cases c on c.id = p.case_id 
+    where c.register_date>= ${query.startDate} and c.register_date<= ${query.endDate}
     GROUP BY pt.products_type
     ORDER BY total DESC
     `;
