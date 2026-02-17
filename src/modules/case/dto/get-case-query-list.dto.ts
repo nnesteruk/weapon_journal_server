@@ -10,10 +10,10 @@ export class GetCaseQueryListDto {
   @IsOptional()
   @Type(() => Date)
   @IsDate()
-  dateFrom?: Date;
+  startDate?: Date;
 
   @IsOptional()
   @Type(() => Date)
   @IsDate()
-  dateTo?: Date;
+  endDate?: Date;
 }

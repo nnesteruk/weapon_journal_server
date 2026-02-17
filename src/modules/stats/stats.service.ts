@@ -29,7 +29,6 @@ export class StatsService {
     const totalProductsByType = productsByType.reduce((acc, item) => {
       return acc + item.total;
     }, 0);
-    console.log(totalProductsByType);
 
     const documents = await this.prismaService.documentsCount
       .groupBy({

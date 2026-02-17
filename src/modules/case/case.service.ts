@@ -21,8 +21,8 @@ export class CaseService {
       where: {
         ...(query.state && { stateApplication: query.state }),
         registerDate: {
-          ...(query.dateFrom && { gte: new Date(query.dateFrom) }),
-          ...(query.dateTo && { lte: new Date(query.dateTo) }),
+          ...(query.startDate && { gte: new Date(query.startDate) }),
+          ...(query.endDate && { lte: new Date(query.endDate) }),
         },
       },
       omit: {
