@@ -145,8 +145,10 @@ export class AuthService {
       expires,
       httpOnly: true,
       domain: this.configService.getOrThrow(this.COOKIE_DOMAIN),
-      secure: !isDevelopment,
-      sameSite: isDevelopment ? "lax" : "none",
+      // secure: !isDevelopment,
+      secure: false,
+      // sameSite: isDevelopment ? "lax" : "none",
+      sameSite: "lax",
       path: "/",
     });
   }
