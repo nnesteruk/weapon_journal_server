@@ -10,6 +10,8 @@ async function start() {
 
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix("api");
+
   const config = app.get(ConfigService);
 
   app.enableCors({
