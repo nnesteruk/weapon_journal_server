@@ -144,7 +144,7 @@ export class AuthService {
     res.cookie("refreshToken", value, {
       expires,
       httpOnly: true,
-      // domain: this.configService.getOrThrow(this.COOKIE_DOMAIN),
+      domain: this.configService.getOrThrow(this.COOKIE_DOMAIN),
       secure: !isDevelopment,
       sameSite: isDevelopment ? "lax" : "none",
       path: "/",
