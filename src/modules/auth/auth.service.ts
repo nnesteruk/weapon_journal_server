@@ -148,7 +148,7 @@ export class AuthService {
       // secure: !isDevelopment,
       secure: false,
       // sameSite: isDevelopment ? "lax" : "none",
-      sameSite: "lax",
+      sameSite: "none",
       path: "/",
     });
   }
