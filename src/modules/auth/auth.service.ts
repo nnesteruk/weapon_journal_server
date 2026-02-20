@@ -146,9 +146,8 @@ export class AuthService {
       httpOnly: true,
       domain: this.configService.getOrThrow(this.COOKIE_DOMAIN),
       // secure: !isDevelopment,
-      secure: false,
       // sameSite: isDevelopment ? "lax" : "none",
-      sameSite: "none",
+      sameSite: "lax",
       path: "/",
     });
   }
