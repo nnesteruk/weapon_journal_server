@@ -12,6 +12,8 @@ export class FileService {
     private readonly configService: ConfigService,
   ) {}
 
+  private uploadDir = path.join(__dirname, "..", "..", "..", "uploads");
+
   async uploadFile(
     caseId: string,
     files: Record<string, Express.Multer.File[]>,
@@ -44,7 +46,6 @@ export class FileService {
         const uniqueName = `${Date.now()}-${file.originalname}`;
 
         const filePath = path.join(categoryDir, uniqueName);
-        console.log(filePath);
 
         fs.writeFileSync(filePath, file.buffer);
 
@@ -71,10 +72,8 @@ export class FileService {
       throw new NotFoundException("Файл не найден");
     }
 
-    const uploadDir = path.join(__dirname, "..", "..", "..", "uploads");
-
     const filePath = path.join(
-      uploadDir,
+      this.uploadDir,
       file.caseId,
       file.category,
       file.fileName,
@@ -101,10 +100,8 @@ export class FileService {
       throw new NotFoundException("Файл не найден");
     }
 
-    const uploadDir = path.join(__dirname, "..", "..", "..", "uploads");
-
     const filePath = path.join(
-      uploadDir,
+      this.uploadDir,
       file.caseId,
       file.category,
       file.fileName,
