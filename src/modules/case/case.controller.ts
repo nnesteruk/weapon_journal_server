@@ -64,6 +64,14 @@ export class CaseController {
         name: item.key,
         maxCount: 2,
       })),
+      {
+        fileFilter(_, file, callback) {
+          file.originalname = Buffer.from(file.originalname, "latin1").toString(
+            "utf8",
+          );
+          callback(null, true);
+        },
+      },
     ),
   )
   async createCase(
@@ -94,6 +102,14 @@ export class CaseController {
         name: item.key,
         maxCount: 2,
       })),
+      {
+        fileFilter(_, file, callback) {
+          file.originalname = Buffer.from(file.originalname, "latin1").toString(
+            "utf8",
+          );
+          callback(null, true);
+        },
+      },
     ),
   )
   async updateCase(
