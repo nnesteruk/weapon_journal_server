@@ -27,7 +27,10 @@ export class StatsService {
     `;
 
     const totalProductsByType = productsByType.reduce((acc, item) => {
-      return acc + item.total;
+      if (item.productsType.toLowerCase() !== "патроны") {
+        return acc + item.total;
+      }
+      return acc;
     }, 0);
 
     const documents = await this.prismaService.documentsCount

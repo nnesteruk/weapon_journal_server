@@ -28,7 +28,7 @@ import { FileModule } from "./modules/file";
     }),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, "..", "uploads"),
-      serveRoot: `/static`,
+      serveRoot: `/api/static`,
     }),
     UserModule,
     PrismaModule,
