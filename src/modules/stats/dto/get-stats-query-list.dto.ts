@@ -11,5 +11,5 @@ export class GetStatsQueryListDto {
   endDate: Date;
 
   @IsArray()
-  weaponTypes: string[];
+  weaponType: string[];
 }

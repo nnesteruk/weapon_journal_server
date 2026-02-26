@@ -18,7 +18,7 @@ export class StatsService {
       },
     });
 
-    const weaponTypes = Prisma.join(query.weaponTypes);
+    const weaponTypes = Prisma.join(query.weaponType);
 
     const productsByType = await this.prismaService.$queryRaw<ProductByType[]>`
     SELECT pt.products_type as "productsType", sum(p.count)::int as total from  products p
