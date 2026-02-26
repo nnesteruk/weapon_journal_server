@@ -1,5 +1,6 @@
 import { PrismaService } from "@modules/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { GetStatsQueryListDto } from "./dto/get-stats-query-list.dto";
 import { ProductByType } from "./interfaces/types";
 
@@ -17,11 +18,13 @@ export class StatsService {
       },
     });
 
+    const weaponTypes = Prisma.join(query.weaponTypes);
+
     const productsByType = await this.prismaService.$queryRaw<ProductByType[]>`
     SELECT pt.products_type as "productsType", sum(p.count)::int as total from  products p
     inner join product_types pt ON  pt.id = p.product_type_id
     inner join  cases c on c.id = p.case_id 
-    where c.register_date>= ${query.startDate} and c.register_date<= ${query.endDate}
+    where c.register_date>= ${query.startDate} and c.register_date<= ${query.endDate} and pt.id in (${weaponTypes})
     GROUP BY pt.products_type
     ORDER BY total DESC
     `;

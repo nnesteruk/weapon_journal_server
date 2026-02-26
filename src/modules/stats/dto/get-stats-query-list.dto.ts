@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDate } from "class-validator";
+import { IsArray, IsDate } from "class-validator";
 
 export class GetStatsQueryListDto {
   @Type(() => Date)
@@ -9,4 +9,7 @@ export class GetStatsQueryListDto {
   @Type(() => Date)
   @IsDate()
   endDate: Date;
+
+  @IsArray()
+  weaponTypes: string[];
 }

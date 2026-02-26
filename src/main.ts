@@ -1,6 +1,7 @@
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { setupSwagger } from "./utils/swagger.util";
@@ -8,9 +9,11 @@ import { setupSwagger } from "./utils/swagger.util";
 async function start() {
   const PORT = process.env.PORT || 5000;
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.setGlobalPrefix("api");
+
+  app.set("query parser", "extended");
 
   const config = app.get(ConfigService);
 
